@@ -70,15 +70,15 @@ char counter2;
 	a=0;
 	c1=0;
 	while(1){
-		len = recvfrom(s, buf, sizeof(buf), 0, (struct sockaddr *)&sin, &sock_len);
+		length = recvfrom(s, buf, sizeof(buf), 0, (struct sockaddr *)&sin, &sock_len);
 		counter2=buf[0];
-		c2=second_countasc; 
+		c2=counter; 
 		//printf("%d\n", c2);
 		//printf("from sending side %s \n",buf);
-		if(len == -1){
+		if(length == -1){
         	    perror("PError");
 		}	
-		else if(len == 1){
+		else if(length == 1){
 			if (buf[0] == 0x03){			
         	    		printf("Transmission Complete\n");
 				break;

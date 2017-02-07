@@ -27,6 +27,7 @@ int main(int argc, char * argv[])
 	char ACKbuf[MAX_LINE];
      char counter2;
 	int length;
+int sock_len;
 	int k;
 	int s;
 	int slen;
