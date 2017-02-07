@@ -21,15 +21,16 @@ int main(int argc, char * argv[])
 		tv.tv_usec=0;
 	char *host;
 	char *fname;
-	char second_countasc;
+	
 	char buf[MAX_LINE];
 	char buff[MAX_LINE];
 	char ACKbuf[MAX_LINE];
-	int len;
-	int loop;
+     char counter2;
+	int length;
+	int k;
 	int s;
 	int slen;
-	int second_count;
+	int c2;
 	
 	if (argc==3) {
 		host = argv[1];
@@ -54,52 +55,53 @@ int main(int argc, char * argv[])
 	}
 
 	
-	/* build address data structure */
+
 	bzero((char *)&sin, sizeof(sin));
 	sin.sin_family = AF_INET;
 	bcopy(hp->h_addr, (char *)&sin.sin_addr, hp->h_length);
 	sin.sin_port = htons(SERVER_PORT);
 
-	/* active open */
+
 	if ((s = socket(PF_INET, SOCK_DGRAM, 0)) < 0) {
 		perror("simplex-talk: socket");
 		exit(1);
 	}
 
-	socklen_t sock_len= sizeof sin;
+	socklen_t sock_length= sizeof sin;
 	if (setsockopt(s,SOL_SOCKET,SO_RCVTIMEO,&tv,sizeof(tv)) < 0){
-			perror("ERROOORRRR");
+			perror("PError");
 		}
 	
-	second_count=0;
-	loop=0;
+	c2=0;
+	k=0;
 
-	/* main loop: get and send lines of text */
+	/* main check: get and send lines of text */
 	while(fgets(buf, 80,fp) != NULL){
 			
-	while(loop==0){	
+	while(k==0){	
 		slen = strlen(buf);
-		second_countasc=second_count;
-		buf[0]=second_countasc;
+		counter2=c2;
+		buf[0]=counter2;
 		buf[slen+2] ='\0';
 		if(sendto(s, buf, slen+1, 0, (struct sockaddr *)&sin, sock_len)<0){
 			perror("SendTo Error\n");
-			//exit(1);	
+				
 		}
 
-		//*Check for ACK 	
 	
-		len=recvfrom(s, ACKbuf, sizeof(ACKbuf), 0, (struct sockaddr *)&sin, &sock_len);
-		if(len>0){
-		second_count=second_count+1;
-		loop=1;
+	
+		length=recvfrom(s, ACKbuf, sizeof(ACKbuf), 0, (struct sockaddr *)&sin, &sock_len);
+		if(length>0)
+          {
+		c2=c2+1;
+		k=1;
 		}
 				
 	}
-		loop=0;
-		printf("Packet being sent %d \n",second_count);
+		k=0;
+		printf("sending packet %d \n",c2);
 	}
-	*buf = 0x02;	
+	*buf = 0x03;	
         if(sendto(s, buf, 1, 0, (struct sockaddr *)&sin, sock_len)<0){
 		perror("SendTo Error\n");
 		exit(1);

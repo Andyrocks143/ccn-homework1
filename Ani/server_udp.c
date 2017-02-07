@@ -14,16 +14,16 @@
 int main(int argc, char * argv[])
 {
 	char *fname;
-    char buf[MAX_LINE];
-	char second_countasc;
-	char first_countasc;
+    char buf[MAX_LINE];	
+char counter2;
+	
 	struct sockaddr_in sin;
-        int len;
+        int length;
 	int a;
         int s, i;
 	int slen;
-	int first_count;
-	int second_count;
+	int c1;
+	int c2;
     struct timeval tv;
 	tv.tv_sec = 1;
 	tv.tv_usec=0;
@@ -68,18 +68,18 @@ int main(int argc, char * argv[])
 			perror("PError");
 		}
 	a=0;
-	first_count=0;
+	c1=0;
 	while(1){
 		len = recvfrom(s, buf, sizeof(buf), 0, (struct sockaddr *)&sin, &sock_len);
-		second_countasc=buf[0];
-		second_count=second_countasc; 
-		printf("%d\n", second_count);
-		printf("from sending side %s \n",buf);
+		counter2=buf[0];
+		c2=second_countasc; 
+		//printf("%d\n", c2);
+		//printf("from sending side %s \n",buf);
 		if(len == -1){
         	    perror("PError");
 		}	
 		else if(len == 1){
-			if (buf[0] == 0x02){			
+			if (buf[0] == 0x03){			
         	    		printf("Transmission Complete\n");
 				break;
 			}
@@ -87,22 +87,24 @@ int main(int argc, char * argv[])
 				perror("Error: Short packet\n");
 			}
 		}	
-		else if(len > 1){
+		else if(length > 1){
 			//Send ACK
-			if(first_count==second_count){
+			if(c1==c2){
 			buf[0]=' ';
 			if(fputs((char *) buf, fp) < 1){
 				printf("fputs() error\n");
 			}
-			first_count=first_count+1;
+			c1=c1+1;
 			if(sendto(s, "ACK", 1, 0, (struct sockaddr *)&sin, sock_len)<0){
 			perror("SendTo Error\n");
 			exit(1);	
 			}
 			}
 
-			//Resend if same
-			else if(first_count>second_count){
+		
+
+	else if(c1>c2){
+
 			if(sendto(s, "ACK", 1, 0, (struct sockaddr *)&sin, sock_len)<0){
 			perror("SendTo Error\n");
 			exit(1);
@@ -111,5 +113,7 @@ int main(int argc, char * argv[])
 		}	
         }
 	fclose(fp);
-	close(s);
+
+	
+close(s);
 }
